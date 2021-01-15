@@ -210,6 +210,7 @@ execute_query_error($mysqli_api, $query, "Vidage des tables wdgrestapi1524_entit
 $query = 'DELETE FROM wdgrestapi1524_entity_email WHERE id < 100000';
 execute_query_error($mysqli_api, $query, "Vidage partiel de la table des mails envoyés : ");
 
+
 /*TODO Champs JSON à anonymiser plus tard :
 sur l'API
 champ options de wdgrestapi1524_entity_bill , 
@@ -227,6 +228,53 @@ changement de l'admin_email dans wdgrestapi1524_options ? et dans wdgrestapi1524
 
 
 
+/*Edition de la base de données
+
+    Se rendre dans wp-wedogood.
+    Modifier la table wp_options :
+        Option 1 “siteurl” : modifier avec l’url locale
+        Option 36 “home” : modifier avec l’url locale
+        Option 44 “template” : remplacer par “yproject”
+
+
+        */
+
+
+        /* Se rendre dans la nouvelle base de données créée.
+
+    Modifier la table wp_options :
+        Option 1 “siteurl” : modifier avec l’url locale de l'api
+        Option 2 “home” : modifier avec l’url locale de l'api
+
+*/
+        
+// faire le lien avec les wallets de tests LW 
+$correspondance =array(
+    'ORGA12W107' => '11182',
+    'ORGA10W101' => '4347'
+);
+foreach($correspondance as $wallet=>$id){
+    execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "'.$wallet.'" WHERE meta_key = "lemonway_id" AND user_id='.$id, "liaison avec des wallets de la sandbox LW : ");
+    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET gateway_list="{"lemonway":"'.$wallet.'"}" WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
+}
+
+// liaison des wallets utilisateurs
+$correspondance =array(
+    'USERW237' => '18198',
+    'USERW217' => '18253',
+    'USERW1' => '14830',
+    'USERW234' => '14898',
+    'USERW236' => '23579',
+    'USERW244' => '68',
+    'USERW245' => '12033',
+    'USERW243' => '18'
+);
+foreach($correspondance as $wallet=>$id){
+    execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "'.$wallet.'" WHERE meta_key = "lemonway_id" AND user_id='.$id, "liaison avec des wallets de la sandbox LW : ");
+    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET gateway_list="{"lemonway":"'.$wallet.'"}" WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
+}
+
+
 $mysqli_api->close();
 $mysqli_site->close();
 
@@ -238,7 +286,6 @@ $mysqli_site->close();
 // on réécrie un fichier avec le contenu anonymisé
 // file_put_contents('apirest_prod_anonymous.sql', $result);
 
-// TODO : faire le lien avec les wallets de tests LW ?
 
 // TODO : copier tous les fichiers du WP (zip du drive ? dans dossier ?)
 
