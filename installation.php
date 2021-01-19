@@ -255,7 +255,8 @@ $correspondance =array(
 );
 foreach($correspondance as $wallet=>$id){
     execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "'.$wallet.'" WHERE meta_key = "lemonway_id" AND user_id='.$id, "liaison avec des wallets de la sandbox LW : ");
-    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET gateway_list="{"lemonway":"'.$wallet.'"}" WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
+    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET gateway_list=\'{"lemonway":"'.$wallet.'"}\' WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
+    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET name= CONCAT(name, "_wallet") WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
 }
 
 // liaison des wallets utilisateurs
@@ -271,7 +272,8 @@ $correspondance =array(
 );
 foreach($correspondance as $wallet=>$id){
     execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "'.$wallet.'" WHERE meta_key = "lemonway_id" AND user_id='.$id, "liaison avec des wallets de la sandbox LW : ");
-    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET gateway_list="{"lemonway":"'.$wallet.'"}" WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
+    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET gateway_list=\'{"lemonway":"'.$wallet.'"}\' WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
+    execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET name= CONCAT(name, "_wallet") WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
 }
 
 
