@@ -58,10 +58,9 @@ if (mysqli_connect_errno()) {
 // TODO vérifier si les BDD locales sont vides, sinon les vider (à faire au moment de la sauvegarde préalable ?)
 
 
-// TODO : aller chercher les sauvegardes des bases sur le drive ? pour l'instant c'est à côté du scropt
+// TODO : aller chercher les sauvegardes des bases sur le drive ? pour l'instant c'est à côté du script
+// TODO : indiquer à l'utilisateur où prendre les BDD et quels fichiers copier à côté de son script
 // echo "Nous allons récupérer les dernières sauvegardes de BDD de la prod \n\n";
-
-
 
 // en code, augmenter la variable max_allowed_packet à 524288000 
 // to get the max_allowed_packet
@@ -92,8 +91,8 @@ function import_db($host, $username, $password, $database, $filename){
 }
 
 // à décommenter pour faire l'import, 
-// import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_site, $filename_site);
-// import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_api, $filename_api);
+import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_site, $filename_site);
+import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_api, $filename_api);
 
 
 // ANONYMISATION ET NETTOYAGE DES BASES
@@ -228,25 +227,6 @@ changement de l'admin_email dans wdgrestapi1524_options ? et dans wdgrestapi1524
 
 
 
-/*Edition de la base de données
-
-    Se rendre dans wp-wedogood.
-    Modifier la table wp_options :
-        Option 1 “siteurl” : modifier avec l’url locale
-        Option 36 “home” : modifier avec l’url locale
-        Option 44 “template” : remplacer par “yproject”
-
-
-        */
-
-
-        /* Se rendre dans la nouvelle base de données créée.
-
-    Modifier la table wp_options :
-        Option 1 “siteurl” : modifier avec l’url locale de l'api
-        Option 2 “home” : modifier avec l’url locale de l'api
-
-*/
         
 // faire le lien avec les wallets de tests LW 
 $correspondance =array(
@@ -277,22 +257,53 @@ foreach($correspondance as $wallet=>$id){
 }
 
 
+
+
+// cf http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation
+
+// todo httpd.conf http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_apache_httpdconf
+
+
+// todo configuration des hosts http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_des_hosts
+
+// todo http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#edition_de_la_base_de_donnees
+// pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
+
+/*Edition de la base de données
+
+    Se rendre dans wp-wedogood.
+    Modifier la table wp_options :
+        Option 1 “siteurl” : modifier avec l’url locale
+        Option 36 “home” : modifier avec l’url locale
+        Option 44 “template” : remplacer par “yproject”
+
+
+        */
+
+
+        /* Se rendre dans la nouvelle base de données créée.
+
+    Modifier la table wp_options :
+        Option 1 “siteurl” : modifier avec l’url locale de l'api
+        Option 2 “home” : modifier avec l’url locale de l'api
+
+*/
+
+
+
+// todo htaccess http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_htaccess
+
+
+// TODO : maj wp-config.php http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_wp-configphp
+// pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
+
+
+
 $mysqli_api->close();
 $mysqli_site->close();
 
-// solution regex sur les dumps avant import abandonnée : 
-// on n'a pas du tout assez de mémoire pour faire ça même si la regex marche bien et que je suis fière de moi
-// $contenu_test = file_get_contents('apirest_prod.sql');
-// $re = '/\b[a-zA-Z]\w*@[\da-z]+\.[a-z]+\b/';
-// $result = preg_replace($re, $dev_email, $contenu_test);
-// on réécrie un fichier avec le contenu anonymisé
-// file_put_contents('apirest_prod_anonymous.sql', $result);
+// TODO : checkout git pour api, plugins et theme ? http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#mise_en_place_de_git
 
 
-// TODO : copier tous les fichiers du WP (zip du drive ? dans dossier ?)
 
-// TODO : checkout git pour api, plugins et theme ?
-
-
-// TODO : maj wp-config.php, htaccess
 
