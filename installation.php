@@ -1,6 +1,19 @@
 <?php
 ini_set('memory_limit', '1024M'); // or you could use 1G
 
+/*******************************************************************************
+ * INITIALISATION DES DONNEES
+ ******************************************************************************/
+$version = 1;
+// version 1 : import des BDD en local et anonymisation
+// version 2 : utilisation possible sur dev.wedogood.co
+// version 3 : copie des fichiers wordpress site et api, configuration htaccess, wp-config etc. mise en place des repo GIT
+$correspondance_version =array(
+    '1' => 'l\'import des BDD en local et anonymisation',
+    '2' => 'en plus de réinitialiser la BDD sur dev.wedogood.co',
+    '3' => 'enfin la copie des fichiers wordpress site et api, la configuration htaccess, wp-config etc. et la mise en place des repo GIT'
+);
+
 /* Define STDIN in case if it is not already defined by PHP for some reason */
 if(!defined("STDIN")) {
     define("STDIN", fopen('php://stdin','r'));
@@ -21,21 +34,33 @@ function get_input_dev($default=''){
 }
 
 // demander l'adresse mail du développeur
-echo "Salut à toi ! Quelle est ton adresse mail chez WDG : \n";
+echo "Salut à toi ! Bienvenue sur le script d'installation \n";
+echo "Ce script est en version ".$version.". Il permet ".$correspondance_version[$version]." \n";
+echo "\n";
+echo "Quelle est ton adresse mail chez WDG : \n";
 $dev_email = get_input_dev('helene@wedogood.co'); // Read up to 80 characters or a newline
 echo "\n";
 echo 'Parfait, nous allons anonymiser les BDD en utilisant cette adresse : ' . $dev_email . "\n\n";
-echo "Quelle est l'hostname (par défaut localhost): \n";
+
+
+/*******************************************************************************
+ * CONNEXION AUX BASES
+ ******************************************************************************/
+
+echo "Quel est l'hostname (par défaut localhost): \n";
+// TODO V2 : pour utilisation sur site de dév, il faudra 2 hostname différents API et site
 $mysql_host = get_input_dev('localhost'); // Read up to 80 characters or a newline
 echo "Nickel, quel est ton nom d'utilisateur (par défaut root) : \n";
 $mysql_username = get_input_dev('root'); // Read up to 80 characters or a newline
 echo "Et maintenant le mot de passe (par défaut vide) : \n";
 $mysql_password = get_input_dev(''); // Read up to 80 characters or a newline
-echo "Quelle est le nom de la base pour l'API (par défaut test_api) : \n";
+echo "Quel est le nom de la base pour l'API (par défaut test_api) : \n";
 $mysql_database_api = get_input_dev('test_api'); // Read up to 80 characters or a newline
 echo "Cool, maintenant celle pour le site (par défaut test_site) : \n";
 $mysql_database_site = get_input_dev('test_site'); // Read up to 80 characters or a newline
+echo "Voici les infos que tu as rentrées : \n";
 echo $mysql_host.','.$mysql_username.','.$mysql_password.','.$mysql_database_api.','.$mysql_database_site."\n";
+echo "\n";
 
 // connection à la base api
 $mysqli_api = new mysqli($mysql_host, $mysql_username, $mysql_password, $mysql_database_api);
@@ -51,17 +76,78 @@ if (mysqli_connect_errno()) {
     exit();
 }
 
-// TODO : demander si on sauvegarde la BDD actuelle ? (pour plus tard) éventuellement créer une BDD s'il n'en existe pas ?
-// https://www.ionos.fr/assistance/hebergement/utiliser-la-base-de-donnees-mysql-pour-un-projet-web/sauvegarder-et-restaurer-une-base-de-donnees-mysql-a-laide-de-php/
-// https://phpsources.net/code/php/mysql/612_dump-sauvegarde-avec-php-d-une-base-de-donnee-mysql
-
-// TODO vérifier si les BDD locales sont vides, sinon les vider (à faire au moment de la sauvegarde préalable ?)
+// TODO V3 : créer une BDD s'il n'en existe pas ?
 
 
-// TODO : aller chercher les sauvegardes des bases sur le drive ? pour l'instant c'est à côté du script
+/*******************************************************************************
+ * OPTIONNEL : SAUVEGARDES DES BASES AVANT VIDAGE
+ ******************************************************************************/
+
+// demander si on sauvegarde la BDD actuelle
+function dump_db($host, $username, $password, $database, $filename){
+    $command = "mysqldump --opt -h {$host} -u {$username} -p{$password} {$database} > {$filename}";
+    exec($command,$output=array(),$worked);
+    switch($worked){
+        case 0:
+            echo 'La base de données ' .$database .' a été stockée avec succès dans le chemin suivant '.getcwd().'/' .$filename ."\n";
+            break;
+        case 1:
+            echo 'Une erreur s est produite lors de la exportation de ' .$database .' vers'.getcwd().'/' .$filename ."\n";
+            exit();
+            break;
+        case 2:
+            echo 'Une erreur d exportation s est produite, veuillez vérifier les informations suivantes : MySQL Database Name:' .$database .' MySQL User Name:' .$username .' MySQL Password:' .$password .' MySQL Host Name:' .$host ."\n";
+            exit();
+            break;
+    }
+}
+
+echo "Souhaites-tu faire une sauvegarde des BDD  (par défaut FALSE) : \n";
+$save_database = get_input_dev(FALSE); // Read up to 80 characters or a newline
+
+if( $save_database != FALSE ){
+    //Exportation de la base de données et résultat
+    echo "Dump du site... \n";
+    dump_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_site, 'dump_site.sql');
+    echo "Dump de l'api... \n";
+    dump_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_api, 'dump_api.sql');
+
+}
+
+
+/*******************************************************************************
+ * SUPPRESSION DES TABLES
+ ******************************************************************************/
+
+// vérifier si les BDD locales sont vides, sinon les vider (à faire au moment de la sauvegarde préalable ?)
+function drop_db($mysql_connect){
+    $mysql_connect->query('SET foreign_key_checks = 0');
+    if ($result = $mysql_connect->query("SHOW TABLES"))
+    {
+        while($row = $result->fetch_array(MYSQLI_NUM))
+        {
+            $mysql_connect->query('DROP TABLE IF EXISTS '.$row[0]);
+        }
+    }
+
+    $mysql_connect->query('SET foreign_key_checks = 1');
+}
+echo "Suppression de toutes les tables de la base du site... \n";
+drop_db($mysqli_site);
+echo "Suppression de toutes les tables de la base de l'api... \n";
+drop_db($mysqli_api);
+
+
+/*******************************************************************************
+ * IMPORT DES BASES
+ ******************************************************************************/
+
+
 // TODO : indiquer à l'utilisateur où prendre les BDD et quels fichiers copier à côté de son script
 // echo "Nous allons récupérer les dernières sauvegardes de BDD de la prod \n\n";
-
+echo "Nous allons maintenant importer les tables de la prod dans ta BDD \n";
+echo "Avant de continuer, as-tu bien copié les fichiers wdg_site_prod.sql et apirest_prod.sql à côté de ce script ? \n";
+get_input_dev('');
 // en code, augmenter la variable max_allowed_packet à 524288000 
 // to get the max_allowed_packet
 $maxp = $mysqli_api->query( 'SELECT @@global.max_allowed_packet' )->fetch_array();
@@ -70,6 +156,7 @@ echo "max_allowed_packet = ".$maxp[ 0 ]."\n";
 $mysqli_api->query( 'SET @@global.max_allowed_packet =524288000 ');
 $maxp = $mysqli_api->query( 'SELECT @@global.max_allowed_packet' )->fetch_array();
 echo "Augmentation à ".$maxp[ 0 ]."\n";
+echo "\n";
 
 // nom des dumps
 $filename_api = 'apirest_prod.sql';
@@ -91,11 +178,15 @@ function import_db($host, $username, $password, $database, $filename){
 }
 
 // à décommenter pour faire l'import, 
+echo "La suite est un peu longue, il va te falloir patienter, et peut-être rentrer à nouveau ton mot de passe \n";
+echo "Import des tables dans la base du site... \n";
 import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_site, $filename_site);
+echo "Import des tables dans la base de l'api... \n";
 import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_api, $filename_api);
 
-
-// ANONYMISATION ET NETTOYAGE DES BASES
+/*******************************************************************************
+ * ANONYMISATION ET NETTOYAGE DES BASES
+ ******************************************************************************/
 
 $dev_prenom = substr($dev_email, 0, strpos($dev_email, '@'));
 
@@ -210,7 +301,7 @@ $query = 'DELETE FROM wdgrestapi1524_entity_email WHERE id < 100000';
 execute_query_error($mysqli_api, $query, "Vidage partiel de la table des mails envoyés : ");
 
 
-/*TODO Champs JSON à anonymiser plus tard :
+/*TODO V1 bis : Champs JSON à anonymiser plus tard :
 sur l'API
 champ options de wdgrestapi1524_entity_bill , 
 champ data dans wdgrestapi1524_entity_investment_draft
@@ -219,16 +310,19 @@ sur le site
 edd_payment_meta dans wpwdg_postmeta 
 */
     
-/*TODO A verifier à l'utilisation :
+/*TODO V1 bis : A verifier à l'utilisation :
  faut-il aussi les changer les noms des utilisateurs dans wpwdg_bp_xprofile_data et wpwdg_edd_customers?
 changement de l'admin_email et du mailserver_login dans wpwdg_options ?
 changement de l'admin_email dans wdgrestapi1524_options ? et dans wdgrestapi1524_users et wdgrestapi1524_usermeta ?
 */
 
 
+/*******************************************************************************
+ * LIAISON AVEC LES WALLETS LW
+ ******************************************************************************/
 
-        
-// faire le lien avec les wallets de tests LW 
+// on lie des organisations et des utilisateurs avec des wallets existants sur la sandbox LW
+// A FAIRE EVOLUER POUR EN AVOIR LE PLUS POSSIBLE !
 $correspondance =array(
     'ORGA12W107' => '11182',
     'ORGA10W101' => '4347'
@@ -258,52 +352,30 @@ foreach($correspondance as $wallet=>$id){
 
 
 
+/*******************************************************************************
+ * INSTALLATION ET CONFIGURATION WORDPRESS
+ ******************************************************************************/
 
-// cf http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation
 
-// todo httpd.conf http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_apache_httpdconf
+// TODO V3 : httpd.conf http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_apache_httpdconf
 
+// TODO V3 : configuration des hosts http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_des_hosts
 
-// todo configuration des hosts http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_des_hosts
+// TODO V3 : http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#edition_de_la_base_de_donnees
+// TODO V3 : pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
 
-// todo http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#edition_de_la_base_de_donnees
+// TODO V3 htaccess http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_htaccess
+
+// TODO V3 : maj wp-config.php http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_wp-configphp
 // pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
-
-/*Edition de la base de données
-
-    Se rendre dans wp-wedogood.
-    Modifier la table wp_options :
-        Option 1 “siteurl” : modifier avec l’url locale
-        Option 36 “home” : modifier avec l’url locale
-        Option 44 “template” : remplacer par “yproject”
-
-
-        */
-
-
-        /* Se rendre dans la nouvelle base de données créée.
-
-    Modifier la table wp_options :
-        Option 1 “siteurl” : modifier avec l’url locale de l'api
-        Option 2 “home” : modifier avec l’url locale de l'api
-
-*/
-
-
-
-// todo htaccess http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_htaccess
-
-
-// TODO : maj wp-config.php http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_wp-configphp
-// pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
-
-
 
 $mysqli_api->close();
 $mysqli_site->close();
 
-// TODO : checkout git pour api, plugins et theme ? http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#mise_en_place_de_git
 
+/*******************************************************************************
+ * INSTALLATION ET CONFIGURATION repo GIT
+ ******************************************************************************/
 
-
+// TODO V3 : checkout git pour api, plugins et theme ? http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#mise_en_place_de_git
 
