@@ -231,6 +231,7 @@ execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET user_email= CONCAT(CON
 execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET user_nicename= CONCAT("FX", ID)', "anonymization des noms d'utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET display_name= CONCAT("FX Coquen de Lecourtois", ID)', "anonymization des noms d'utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET user_login= CONCAT("FX_login", ID)', "anonymization des noms d' utilisateurs : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET user_pass= "$P$BjTuSpuSeY4uH3FIr1HD8Nz8DX5vUS0"', "anonymization des noms d' utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT(CONCAT("'.$dev_prenom.'+", user_id), "@wedogood.co") WHERE meta_key = "orga_contact_email"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT("FX_login", user_id) WHERE meta_key = "nickname"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT("Coquen de Lecourtois", user_id) WHERE meta_key = "last_name"', "anonymization des meta utilisateurs : ");
@@ -256,6 +257,9 @@ execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET fi
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET lastname= CONCAT("Coquen de Lecourtois", user_wpref)', "anonymization des investissements API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_project_draft SET email= CONCAT(CONCAT("'.$dev_prenom.'+", id), "@wedogood.co")', "anonymization des mails project_draft API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_poll_answer SET user_email= CONCAT(CONCAT("'.$dev_prenom.'+", user_id), "@wedogood.co")', "anonymization des  mails poll API : ");
+
+
+
 
     
 /*Tables à supprimer sur le site :
