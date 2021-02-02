@@ -257,7 +257,8 @@ execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET fi
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET lastname= CONCAT("Coquen de Lecourtois", user_wpref)', "anonymization des investissements API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_project_draft SET email= CONCAT(CONCAT("'.$dev_prenom.'+", id), "@wedogood.co")', "anonymization des mails project_draft API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_poll_answer SET user_email= CONCAT(CONCAT("'.$dev_prenom.'+", user_id), "@wedogood.co")', "anonymization des  mails poll API : ");
-
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_users SET user_email= CONCAT("'.$dev_prenom.'", "+admin@wedogood.co") WHERE ID = 1', "anonymization du mail admin API : ");
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_users SET user_pass= "$P$BjTuSpuSeY4uH3FIr1HD8Nz8DX5vUS0" WHERE ID = 1', "anonymization du pass admin API : ");
 
 
 
