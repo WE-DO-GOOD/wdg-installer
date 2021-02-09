@@ -165,24 +165,27 @@ $filename_site = 'wdg_site_prod.sql';
 
 //Import des bases de données via mysql dans les BDD locales
 function import_db($host, $username, $password, $database, $filename){
-    $cmd = "mysql -h {$host} -u {$username} -p{$password} {$database} < {$filename}";
+    $cmd = "mysql -h {$host} -u {$username} -p {$password} {$database} < {$filename}";
 
     $arr_out = array();
     unset($return);
-    exec($cmd, $arr_out, $return);
+    $exec_result = exec($cmd, $arr_out, $return);
 
-    if($return !== 0) {
-        echo "mysql for {$host} : {$database} failed with a return code of {$return}\n\n";
+    if ( $return !== 0 ) {
+        echo "mysql for {$host} : {$database} failed with a return code of {$return}\n";
         print_r($arr_out);
+		echo "\n\n";
+		return FALSE;
     }
+	return TRUE;
 }
 
 // à décommenter pour faire l'import, 
 echo "La suite est un peu longue, il va te falloir patienter, et peut-être rentrer à nouveau ton mot de passe \n";
 echo "Import des tables dans la base du site... \n";
-import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_site, $filename_site);
+$import_db_site_result = import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_site, $filename_site);
 echo "Import des tables dans la base de l'api... \n";
-import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_api, $filename_api);
+$import_db_api_result = import_db($mysql_host, $mysql_username, $mysql_password, $mysql_database_api, $filename_api);
 
 /*******************************************************************************
  * ANONYMISATION ET NETTOYAGE DES BASES
