@@ -358,27 +358,29 @@ foreach($correspondance as $wallet=>$id){
     execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET name= CONCAT(name, "_wallet") WHERE wpref = '.$id, "liaison avec des wallets de la sandbox LW : ");
 }
 
+// Redéfinition de l'URL locale
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_options SET option_value= "http://wedogoodapiwp.local" WHERE option_name = "siteurl"', "redéfinition de l'url locale : ");
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_options SET option_value= "http://wedogoodapiwp.local" WHERE option_name = "home"', "redéfinition de l'url locale : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_options SET option_value= "http://wedogood.local" WHERE option_name = "siteurl"', "redéfinition de l'url locale : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_options SET option_value= "http://wedogood.local" WHERE option_name = "home"', "redéfinition de l'url locale : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_options SET option_value= "yproject" WHERE option_name = "template"', "redéfinition de l'url locale : ");
 
+$mysqli_api->close();
+$mysqli_site->close();
 
 /*******************************************************************************
  * INSTALLATION ET CONFIGURATION WORDPRESS
  ******************************************************************************/
 
-
 // TODO V3 : httpd.conf http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_apache_httpdconf
 
 // TODO V3 : configuration des hosts http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#fichier_de_configuration_des_hosts
 
-// TODO V3 : http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#edition_de_la_base_de_donnees
-// TODO V3 : pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
 
 // TODO V3 htaccess http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_htaccess
 
 // TODO V3 : maj wp-config.php http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#editer_le_fichier_wp-configphp
 // pour l'api aussi http://wiki.wedogood.co/doku.php?id=private:plateforme:dev:site:installation#installation_de_l_api_wordpress
-
-$mysqli_api->close();
-$mysqli_site->close();
 
 
 /*******************************************************************************
