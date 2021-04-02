@@ -308,6 +308,9 @@ execute_query_error($mysqli_api, $query, "Vidage des tables wdgrestapi1524_entit
 $query = 'DELETE FROM wdgrestapi1524_entity_email WHERE id < 100000';
 execute_query_error($mysqli_api, $query, "Vidage partiel de la table des mails envoyés : ");
 
+// on remplace le domaine dans les liens de fake_url
+$query = 'UPDATE wpwdg_postmeta SET meta_value = REPLACE(meta_value, "https://www.wedogood.co", "http://wedogood.local")  WHERE meta_key LIKE "fake_url"';
+execute_query_error($mysqli_site, $query, "Remplacement du nom de domaine pour les liens vers l'EP ");
 
 /*TODO V1 bis : Champs JSON à anonymiser plus tard :
 sur l'API
