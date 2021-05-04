@@ -224,7 +224,7 @@ wpwdg_edd_customers
 wpwdg_usermeta (attention il y a des mélanges de données, bien penser à faire nickname et orga_contact_email)
 
     email --> mail du développeur + id_site de l'user
-    prénom / nom --> François-Xavier Coquen de Lecourtois avec id_site de l'user
+    prénom / nom --> François-Xavier Coquen de Lecourtois
     téléphone --> 0240000000
     iban / bic --> FR7642559000011234567890121 / CCOPFRCP
     contact_if_deceased --> Georges Abitbol 
@@ -237,17 +237,17 @@ execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET user_login= CONCAT("FX
 execute_query_error($mysqli_site, 'UPDATE wpwdg_users SET user_pass= "$P$BjTuSpuSeY4uH3FIr1HD8Nz8DX5vUS0"', "anonymization des noms d' utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT(CONCAT("'.$dev_prenom.'+", user_id), "@wedogood.co") WHERE meta_key = "orga_contact_email"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT("FX_login", user_id) WHERE meta_key = "nickname"', "anonymization des meta utilisateurs : ");
-execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT("Coquen de Lecourtois", user_id) WHERE meta_key = "last_name"', "anonymization des meta utilisateurs : ");
-execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= CONCAT("François-Xavier", user_id) WHERE meta_key = "first_name"', "anonymization des meta utilisateurs : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "Coquen de Lecourtois" WHERE meta_key = "last_name"', "anonymization des meta utilisateurs : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "François-Xavier" WHERE meta_key = "first_name"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "FR7642559000011234567890121" WHERE meta_key = "bank_iban"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "CCOPFRCP" WHERE meta_key = "bank_bic"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_usermeta SET meta_value= "0240000000" WHERE meta_key = "user_mobile_phone"', "anonymization des meta utilisateurs : ");
 execute_query_error($mysqli_site, 'UPDATE wpwdg_edd_customers SET email= CONCAT(CONCAT("'.$dev_prenom.'+", id), "@wedogood.co")', "anonymization des mails customers : ");
-execute_query_error($mysqli_site, 'UPDATE wpwdg_edd_customers SET name= CONCAT(CONCAT("François-Xavier", id), CONCAT(" Coquen de Lecourtois", id))', "anonymization des noms customers : ");
+execute_query_error($mysqli_site, 'UPDATE wpwdg_edd_customers SET name= CONCAT("François-Xavier", " Coquen de Lecourtois")', "anonymization des noms customers : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET email= CONCAT(CONCAT("'.$dev_prenom.'+", wpref), "@wedogood.co")', "anonymization des utlisateurs API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET username= CONCAT("FX_login", wpref)', "anonymization des utilisateurs API : ");
-execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET name= CONCAT("François-Xavier", wpref)', "anonymization des utilisateurs API : ");
-execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET surname= CONCAT("Coquen de Lecourtois", wpref)', "anonymization des utilisateurs API : ");
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET name= "François-Xavier"', "anonymization des utilisateurs API : ");
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET surname= "Coquen de Lecourtois"', "anonymization des utilisateurs API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET contact_if_deceased= "Georges Abitbol" WHERE contact_if_deceased  != ""', "anonymization des utilisateurs API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET phone_number= "0240000000" WHERE phone_number != "" ', "anonymization des utilisateurs API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_user SET bank_iban= "FR7642559000011234567890121" WHERE bank_iban  != ""', "anonymization des utilisateurs API : ");
@@ -256,8 +256,8 @@ execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET 
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET bank_iban= "FR7642559000011234567890121" WHERE bank_iban  != ""', "anonymization des orgas API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_organization SET bank_bic= "CCOPFRCP" WHERE bank_bic  != ""', "anonymization des orgas API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET email= CONCAT(CONCAT("'.$dev_prenom.'+", user_wpref), "@wedogood.co")', "anonymization des investissements API : ");
-execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET firstname= CONCAT("François-Xavier", user_wpref)', "anonymization des investissements API : ");
-execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET lastname= CONCAT("Coquen de Lecourtois", user_wpref)', "anonymization des investissements API : ");
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET firstname= "François-Xavier"', "anonymization des investissements API : ");
+execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_investment SET lastname= "Coquen de Lecourtois"', "anonymization des investissements API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_project_draft SET email= CONCAT(CONCAT("'.$dev_prenom.'+", id), "@wedogood.co")', "anonymization des mails project_draft API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_entity_poll_answer SET user_email= CONCAT(CONCAT("'.$dev_prenom.'+", user_id), "@wedogood.co")', "anonymization des  mails poll API : ");
 execute_query_error($mysqli_api, 'UPDATE wdgrestapi1524_users SET user_email= CONCAT("'.$dev_prenom.'", "+admin@wedogood.co") WHERE ID = 1', "anonymization du mail admin API : ");
